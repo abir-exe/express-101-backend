@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 
 
@@ -36,6 +36,8 @@ async function run() {
 
     const userCollection = client.db("userDB").collection("users");
 
+    // post single data endpoint
+
     app.post("/users", async (req, res) => {
       const user = req.body;
 
@@ -44,7 +46,27 @@ async function run() {
       const result = await userCollection.insertOne(user);
       console.log(result);
       res.send(result);
+    });
+
+    // get data endpoint 
+
+    app.get("/users", async(req, res) => {
+      const result = await userCollection.find().toArray();
+      console.log(result);
+      res.send(result);
     })
+
+    // delete single data endpoint 
+    app.delete("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log("id", id);
+      const query = {
+        _id : new ObjectId(id),
+      };
+      const result = await userCollection.deleteOne(query);
+      res.send(result);
+
+    });
 
 
 
